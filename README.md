@@ -52,4 +52,6 @@ Google ML and Big Data products can be divided into 4 general categories along t
 
      4.2. AI Solutions - Document AI, Contact Center AI, Retail Product Discovery, Healthcare data engine
 
+#### Reading List
+* GCP product description cheat sheet - https://googlecloudcheatsheet.withgoogle.com/
 
