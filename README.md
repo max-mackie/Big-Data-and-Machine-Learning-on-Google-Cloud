@@ -55,3 +55,54 @@ Google ML and Big Data products can be divided into 4 general categories along t
 #### Reading List
 * GCP product description cheat sheet - https://googlecloudcheatsheet.withgoogle.com/
 
+### Lab 1
+
+__Public datasets__
+
+Go to `BigQuery > Resources > Add Data > Explore public datasets` to add publically available datasets.
+
+You can query the datasets using SQL syntax:
+
+```
+SELECT
+  name, gender,
+  SUM(number) AS total
+FROM
+  `bigquery-public-data.usa_names.usa_1910_2013`
+GROUP BY
+  name, gender
+ORDER BY
+  total DESC
+LIMIT
+  10
+```
+
+Before you run the query, the query validator in the bottom right will show much data is going to be run.
+
+__Creating your own dataset__
+
+Resources seem to have the following structure:
+
+`Resources > Project > Dataset > Table`
+
+To add your own dataset:
+
+`Resources > click Project ID > Create dataset`
+(For example babynames)
+
+Then, we can add a table to this dataset.
+
+`Click dataset name > Create table`
+
+* Source > upload from file
+* File format > CSV
+* Table name > names_2014
+* Schema > name:string,gender:string,count:integer
+
+Creating the table will run a job. The table will be created after the job completes.
+
+Click preview to see some of the data.
+
+Then you can query the table like before.
+
+SQL Syntax for BigQuery: https://cloud.google.com/bigquery/docs/reference/standard-sql/
