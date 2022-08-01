@@ -155,7 +155,40 @@ An operational pipeline has a publisher sending data to a topic that an applicat
 
 Pub/Sub supports many different inputs and outputs and you can even publish a Pub/Sub event from one topic to another. 
 
-To get messages reliably into a data warehousewe need a pipeline that can match Pub/Sub scale and elasticity to do it.
+
+
+### Designing Streaming Pipelines with Apache Beam
+
+After messages have been captured reliably into a data warehousewe need a pipeline that can match Pub/Sub scale and elasticity to do it. This is where Dataflow comes in, Dataflow creates a pipeline to process both streaming data and batch data.
+* Here process refers to the steps to extract, transform and load data (ETL)
+
+During pipeline design phase we need to consider the following questions:
+
+1. Will the pipeline code be compatible with both batch and streaming data or will it need to be refactored?
+2. Will the pipeline code software development kit or SDK being used have all the transformations, mid-flight aggregations and windowing and be able to handle late data?
+3. Are there existing templates or solutions that should be referenced?
+
+Apache Beam is a popular open source pipeline design solution. It is a unified programming model to define and execute data processing pipelines, including ETL, batch, and stream processing
+* Unified means it uses a single programming model for both batch and streaming data
+* Its portable meaning it can work on multiple execution environments like Dataflow and Apache Spark amoung others.
+Its extensible meaning it allows you to write and share your own connectors and transformation libraries
+
+The Apache Beam software development kit (SDK) is a collection of software development tools in one installable package. It provides a veriety of libraries for transformations and data connectors to sources and sinks
+
+Apache Beam creates a model representation from your code thats protable across many runners
+* runners pass off your model for execution on a variety of different possible engines with Dataflow being a popular choice
+
+### Implementing Streaming Pipelines on Cloud Dataflow
+An execution engine needs to be identified to implement pipelines such as those made in Apache Beam
+
+When Choosing an implementation method consider the following:
+1. how much maintenance overhead is involved? 
+2. Is the infrastructure reliable? 
+3. How is the pipeline scaling handled? 
+4. How can the pipeline be monitored? 
+5. Is the pipeline locked into a specific service provider?
+
+
 
 
 
