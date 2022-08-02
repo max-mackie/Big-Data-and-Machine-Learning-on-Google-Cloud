@@ -424,3 +424,33 @@ __BigQuery Tips__
 * `CREATE OR REPLACE TABLE [dataset].[tablename] AS [SQL QUERY]` to save the data into a table, saving you having to rerun the query every time
 * In the above, you could replace TABLE with VIEW, to just store the query itself. Helpful if the data is changing a lot.
 
+### Introduction to BigQuery ML
+Building an training ML models can be very time consuming the general steps are:
+1. Export data from your data store into an IDE, Integrated Development Environment, such as Jupyter Notebook or Google Colab
+2. Transform the data and perform your feature engineering steps before you can feed it into a training model
+3. Build the model in tensorflow or similar library and train it locally on a computer or on a virtual machine
+4. Improve performace by going back and forth to get more data and create new features (people normally stop this after a few iterations)
+
+BigQuery allows for you to create and execute machine learning models on your structured data sets in BigQuery in just a few minutes using SQL queries. There are a few steps.
+1. create a model with a SQL statement
+2. write a SQL prediction query and invoke ml.predict
+* additional steps might include activities like evaluating the model
+
+BigQuery ML was designed to be simple, like building a model in 2 steps. That simplicity extends to defining the machine learning hyperparameters, which let you tune the model to achieve the best training results
+* Hyperparameters are the settings applied to a model before the training starts, e.g. learning rate
+* In BigQuery you can mannaully control these or use automatic tunning 
+
+When using structured dataset in BigQuery ML you must choose the appropriate model type which depends on the business goal and datasets
+* BigQuery supports supervised and unsupervised models
+* Supervised models are task driven and identify a goal
+* Unsupervised are data driven and identify a pattern
+
+Within a supervised model, if your goal is to classify data like whether an email is spam, use logistic regression. If your goal is to predict a number like shoe sales for the next 3 months, use linear regrassion. Within an unsupervised model if your goal is to identify patterns or clusters and then determine the best way to group them. Like grouping random photos of flowers into categories you should use cluster analysis
+
+Once you have your problem outline, its time to decide on teh best model. 
+* categories include classification and regression models
+* There are other model options to choose from along with ML Ops.
+* Logistic regression is an eample of a classification model
+* Linear regression is an example of a regression model
+
+It is recommended that you start with these options then use teh results to benchmark and compare against more complex models such as DNN which may take more time and resources to train and deploy.
