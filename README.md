@@ -188,8 +188,138 @@ When Choosing an implementation method consider the following:
 4. How can the pipeline be monitored? 
 5. Is the pipeline locked into a specific service provider?
 
+Dataflow
+* Dataflow is a fully managed service for executing Apache Beam pipelines within the Google Cloud ecosystem
+* Since data flow is built on Google's infrastrucure it allows for reliable auto-scaling to meet data pipeline demands
+* Dataflow is serverless and NoOps (no operations)
+       
+       - a NoOps environment is one that doesn't require management from an operations team as maintenance, monitoring and scaling are automated
+       
+       - Serverless computing is a Cloud computing execution model. so the cloud platform manages infrastructure tasks on behalf of the users. e.g. resource provisioning, performance tuning and ensuring pipeline reliablity
+      
+When dataflow receives a job it;
+1. It starts by optimizing a pipeline model's execution graph to remove any inefficiencies. 
+2. It then schedules out distributed work to new workers and scales as needed. 
+3. After that, it auto-heals any worker faults. 
+4. From there, it automatically re-balances efforts to most efficiently use its workers. 
+5. Finally, it outputs data to produce a result. (e.g. output to bigquery)
+
+Dataflow has many templates which cover common use cases across Google Cloud products. These can be broken into 3 sets
+* Streaming templates
+
+        - for processing bulk data or batch load data. e.g. Pub/Sub to BigQuery, Pub/Sub to cloud storage, Datastream to BigQuery and Pub/Sub to mongoDB.
+        
+* Batch templates
+
+        - for processing bulk data or batch load data. e.g. BigQuery to Cloud Storage, Bigtable to Cloud Storage, Cloud Storage to BigQuery and Cloud Spanner to Cloud Storage
+
+* Utility templates
+
+        - Utility templates address activities related to bulk compression, deletion and conversion  
 
 
+### Visulisation with Looker
 
+Looker supports BigQuery as well as more than 60 SQL database products commonly referred to as dialects. It allows developers to define a semantic modeling layer on top of databases using looker modeling language LookML.
+* LookML defines logic and permissions independent from a specific database or a swqual language which frees data engineer from interacting with individual databases to focus more on business logic across an organization
+* Looker is 100% web based making it easy to integrate into workflows and share
+* Looker also has an API which can be used to embed looker reports in other applications
 
+Looker dashboards can be created to provide straightfowards presentations to help you and your colleagues quickly see a high level business status. To share a looker dashboard you schedule delivery through storage services like Google Drive, slack and dropbox
+
+### Visulisation with Data Studio
+
+DataStudio is integrated into BigQuery making data visulisation possible with just a few clicks. Therefore leveraging data studio doesn't require support from an administrator to establish a data connection.
+
+Three steps needed to create a Data Studio dashboard
+1. Choose a template, you can start with either a pre built template or a blank report.
+2. link the dashboard to a data source. This may come from big query, a local file, or a google application like google sheets
+3. explore your dashboard
+
+### Lab 2: Creating a Streaming Data Pipeline for a Real-Time Dashboard with Dataflow
+
+__Cloud Pub/Sub topics__
+
+Cloud Pub/Sub lets decouples senders and receivers. Senders send messages to a Cloud Pub/Sub _topic_, and receivers subscribe to this topic.
+
+__Create a BigQuery dataset_
+
+Messages published into Pub/Sub will be stored in BigQuery.
+
+1. In Cloud Shell, run `bq mk taxirides` to create a dataset called `taxirides` in BigQuery
+2. Now create a table inside the dataset:
+
+```
+bq mk \
+--time_partitioning_field timestamp \
+--schema ride_id:string,point_idx:integer,latitude:float,longitude:float,\
+timestamp:timestamp,meter_reading:float,meter_increment:float,ride_status:string,\
+passenger_count:integer -t taxirides.realtime
+```
+OR: navigate to BigQuery on the GCP UI > View actions > create dataset. then fill out dataset details and click create dataset. then click into the newly created dataset and click create table then fill in table details and click create table.
+
+__Create a Cloud Storage bucket__
+
+1. Storage > Create Bucket
+2. Name must be globally unique (e.g., project id)
+
+__Setup Cloud Dataflow Pipeline__
+
+1. Navigation > Dataflow
+2. Create job from template
+3. Type > Cloud Pub/Sub topic to BigQuery template
+4. Input topic > projects/pubsub-public-data/topics/taxirides-realtime
+5. Output table > qwiklabs-gcp-72fdadec78efe24c:taxirides.realtime
+6. Temporary location > gs://qwiklabs-gcp-72fdadec78efe24c/tmp/
+7. Click run job
+
+Cloud Dataflow will now show a visualization of the Dataflow job running.
+
+__Analyze streaming data__
+
+You can check the data in BigQuery:
+
+`SELECT * FROM taxirides.realtime LIMIT 10;`
+
+See aggregated per/minute ride data:
+
+```sql
+WITH streaming_data AS (
+
+SELECT
+  timestamp,
+  TIMESTAMP_TRUNC(timestamp, HOUR, 'UTC') AS hour,
+  TIMESTAMP_TRUNC(timestamp, MINUTE, 'UTC') AS minute,
+  TIMESTAMP_TRUNC(timestamp, SECOND, 'UTC') AS second,
+  ride_id,
+  latitude, 
+  longitude,
+  meter_reading,
+  ride_status,
+  passenger_count
+FROM
+  taxirides.realtime
+WHERE ride_status = 'dropoff'
+ORDER BY timestamp DESC
+LIMIT 100000
+
+)
+
+# calculate aggregations on stream for reporting:
+SELECT 
+ ROW_NUMBER() OVER() AS dashboard_sort,
+ minute,
+ COUNT(DISTINCT ride_id) AS total_rides,
+ SUM(meter_reading) AS total_revenue,
+ SUM(passenger_count) AS total_passengers
+FROM streaming_data
+GROUP BY minute, timestamp
+```
+
+__Explore in Data Studio__
+
+1. Click `Explore in Data Studio`
+2. Set up dimensions and metrics as desired
+
+Once finished, stop the Cloud Dataflow pipeline job.
 
