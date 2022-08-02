@@ -1,4 +1,4 @@
-# Google Cloud Big Data and Machine Learning ---
+# Google Cloud Big Data and Machine Learning Fundamentals
 ## Course Introduction
         -----------------------------------------
                 2. Big Data/ML Products
@@ -331,3 +331,25 @@ Once finished, stop the Cloud Dataflow pipeline job.
 
 
 ## Big Data with BigQuery
+### Introduction
+Bigquery is a fully-managed data warehouse
+* A data warehouse is a large store containing petabytes of data gathered from a wide range of sources
+* Being fully managed means that it takes care of the underlying infrastructure
+
+BigQuery provides two services in one. Storage and Analytics. It is a serverless solution which means you can use SQL to answer business qauestions in the front end without worrying about infrastructure int eh back end.
+
+BigQuery has a flexable pay as you go pricing model but fixed bill options are also available
+
+Data in BigQuery is encrypted at rest by default without any action required from a customer
+* Encryption at rest means encryption is used to protect data that is stored on a disk including solid state drive or backup media
+
+BigQuery has built in machine learning features so you can write ML models directly in BigQuery using SQL. Other professional tools such as vertex AI can also be used to train ML models. You can export data sets directly from BigQuery into vertex AI for a seamless integration across the data to AI lifecycle
+
+What does a typical data warehouse solution architecture look like
+![image](https://user-images.githubusercontent.com/80007111/182462421-3763e90c-4f27-4fe5-bf7e-c6cadf987359.png)
+
+* Dataflow is used to process the data this step is know as ETL. 
+* BigQuery sits in the middle to link data processing using dataflow and data access through analytics AI and ML tools.
+* The job of the analystics engine of BigQuery at the end of the data pipeling is to ingest all the processed data after ETL, store and analyse it and possibly output it for further use such as data visulisation and machine learning.
+
+BigWuery is like a common staging area for data analytics workloads. When your data is there business analysts, BI developers, data scientists and machine learning engineers can be granted access to your data for their own insights
