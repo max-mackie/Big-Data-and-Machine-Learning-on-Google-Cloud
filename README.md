@@ -352,4 +352,31 @@ What does a typical data warehouse solution architecture look like
 * BigQuery sits in the middle to link data processing using dataflow and data access through analytics AI and ML tools.
 * The job of the analystics engine of BigQuery at the end of the data pipeling is to ingest all the processed data after ETL, store and analyse it and possibly output it for further use such as data visulisation and machine learning.
 
-BigWuery is like a common staging area for data analytics workloads. When your data is there business analysts, BI developers, data scientists and machine learning engineers can be granted access to your data for their own insights
+BigQuery is like a common staging area for data analytics workloads. When your data is there business analysts, BI developers, data scientists and machine learning engineers can be granted access to your data for their own insight
+
+### Storage and Analytics
+BigQuerys fully-managed storage and fast SQL-based analytical engine services are connected by Google's high-speed internal network. This is super-fast and allows BigQuery to scale both storage and compute independently based on demand
+
+BigQuery can ingest data sets from various sources - internal data (saved directly in BigQuery), external data, multi-cloud data and public data-sets
+* This is fully managed automatically replicated, backed up and set to auto-scale
+
+BigQuery also offers the option to query extenal data sources such as Cloud storage or other google cloud database services such as Spanner or Cloud SQL. Allowing you to bypass BigQuery managed Storage
+* This means raw CSV files and Cloud storage or Google sheets can be used to write a query without being ingested by BigQuery first
+* Its worth noting, inconsistency might result from saving and processing data seperately. To avoid that risk consider using dataflow to build a streaming data pipeline into BigQuery.
+* BigQuery can also ingest data from multi-cloud data which is data stored in multiple cloud services such as AWS or Azure
+
+There are three basic patterns for loading data into BigQuery
+1. Batch load operation - where data is loaded into a BigQuery table in a single batch operation
+2. Streaming - smaller batches of data are streamed continuously so that data is available for querying in near real-time
+3. Generated data - SQL statements are used to insert rows into an existing table or to write the results of a query to a table
+
+BigQuery is also intended for analysing data and helping to make business decisions. It is optimised for running analytical queries over large data sets. The analytics features that are available in BigQuery are;
+* Ad hoc analysis using SQL
+* BigQuery SQL dialect
+* GeoSpatial analytics using geography data types in standard SQL geography functions
+* BigQuery ML
+* BigQuery BI Engine for building business intelligence dashboards
+
+By default BigQuery runs interactive queries, which means that the queries are executed as needed. It also offers batch queries where each query is queued on your behalf and the query starts when idle resources are availabe
+
+
