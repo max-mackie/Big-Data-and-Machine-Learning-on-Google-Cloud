@@ -323,3 +323,8 @@ __Explore in Data Studio__
 
 Once finished, stop the Cloud Dataflow pipeline job.
 
+### Reading List
+* https://cloud.google.com/pubsub/docs/
+* https://cloud.google.com/dataflow/docs/
+* https://developers.google.com/datastudio/
+* https://connect.looker.com/ AND https://docs.looker.com/
