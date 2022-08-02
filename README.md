@@ -379,4 +379,48 @@ BigQuery is also intended for analysing data and helping to make business decisi
 
 By default BigQuery runs interactive queries, which means that the queries are executed as needed. It also offers batch queries where each query is queued on your behalf and the query starts when idle resources are availabe
 
+### BigQuery demo - San Francisco bike share
+
+`Cloud console > Big Query > Create dataset > Create table (can upload from storage, etc.)`
+
+When writing queries, use the following format:
+
+`FROM [project (name? or id?)].[dataset].[table]`
+
+E.g.:
+
+````
+SELECT COUNT(*) AS total_trips
+FROM `bigquery-public-data.san_francisco_bikeshare.bikeshare_trips`
+````
+
+(Click on this query to view the table info)
+
+Click the down arrow > Run selected to just run the selected part of the query
+
+__Architecture__
+
+    ----------------------------                          ----------------------------
+      BigQuery Storage Service    <-- Petabit network -->   BigQuery Query Service
+    ----------------------------                          ----------------------------
+     Project                                                 Run queries
+       Dataset A | Dataset B                                 Connectors to other products
+       Table 1   | Table 1*                                  
+       Table 2   | ...
+       ...       |
+    ----------------------------                          ----------------------------
+     * Tables stored as compressed 
+       column in Colossus
+     * Supports steams or data ingest
+
+
+__BigQuery Tips__
+
+* Ctrl/cmd-click on table name: view table
+* In details, click on field name to insert it into the query
+* Click More > Format to automatically format the query
+* Explore in Data Studio > visualize data
+* Save query > Save query data in project
+* `CREATE OR REPLACE TABLE [dataset].[tablename] AS [SQL QUERY]` to save the data into a table, saving you having to rerun the query every time
+* In the above, you could replace TABLE with VIEW, to just store the query itself. Helpful if the data is changing a lot.
 
