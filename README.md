@@ -887,6 +887,7 @@ SELECT
 
 ORDER BY
   predicted_will_buy_on_return_visit DESC;
+```
 
 ### Reading List
 * https://cloud.google.com/bigquery
@@ -897,3 +898,82 @@ ORDER BY
 * https://cloud.google.com/bigquery-ml/docs/tutorials
 
 ## Machine Learning Options on Google Cloud
+### Options to build ML Models
+Google Cloud offers four options for building machine learning models.
+![image](https://user-images.githubusercontent.com/80007111/182684306-7af46b29-538b-489e-b144-afd703b2e762.png)
+![image](https://user-images.githubusercontent.com/80007111/182684963-ca00dfdb-8ce0-46e5-b807-499f65745184.png)
+* BigQuery ML is good for those who are familiar with SQL and have data in BigQuery
+* Pre-built APIs are great is you have little ML expertise
+* AutoML is used to build custom models with your own training data with minimal coding
+* Custom training is used when you want full control of the ML workflow
+
+
+### Pre-built APIs
+ML models require lots of high-quality training data. If this is not available then pre-built APIs are a great place to start. Pre-built APIs are offered as services. The available pre-built APIs are:
+* Speech-to-Text API - Converts audio to text for data processing
+* Cloud Natural Language API - Recognises parts of speech called entities and sentiment
+* Cloud Translation API - Converts text from one language to another
+* Text-to-Speech API - Converts text into high-Quality voice audio
+* Vision API - Works with and recognises content in static images
+* Video Intelligence API - Recognises motion and action in video
+
+### AUTO ML
+For AutoML two technologies are vital, transfer learning and Neural Architect Search
+
+Transfer learning
+
+With transfer learning, you build a knowledge base in the field. Transfer learning alows people with smaller datasets or less computational power achieve state of the art results by taking advantage of pre-trained models that have been trained on similar larger datasets. Because it learns via transfer learning it doesnt have to learn from scratch.
+
+Neural Architect Search
+
+The goal of neural architect search is to find the optimal model for the relevant project. AutoML is powered by the latest machine learning research so although a model performs training, the AutoML platform actually trains and evaluates multiple models and compare them to each other. This neural architecture search produces and ensemble of ML models and chooses the best one.
+
+AutoML allows a nocode solution that means it can train high quality custom machine learning models with minimal effort and requires little machine learning expertise. Therefore;
+* Data scientists can focus their time on tasks like defining business problems or evaluation and imporving model results
+* AutoMl can be used to quickly prototype models and explore new datasets before investing in development. This can involve identifying the best features in a dataset.
+
+AutoML support four types of data,
+* Image
+* Tabular
+* Text
+* Video
+for each data type AutoML solves different types of problems called objectives
+
+For image data, 
+* you can use a classification model to analyze image data and return a list of content categories that apply to the image.
+* You can also use an object detection model to analyze your image data and return annotations that consists of a label, and bounding box location for each object found in an image.
+
+For tabular data, 
+* you can use a regression model to analyze tabular data and return a numeric value.
+* You can use a classification model to analyze tabular data and return a list of categories.
+* A forecasting model can use multiple rows of time dependent tabular data from the past to predict a series of numeric values in the future.
+
+For text data,
+* you can use a classification model to analyze text data and return a list of categories as applied to the texts found in the data.
+* An entity extraction model can be used to inspect text data for node entities referenced in the data and label those entities in the text.
+* A sentiment analysis model can be used to inspect text data and identify the prevailing emotional opinion within it, especially to determine a writer's comment as positive, negative, or neutral. 
+
+Finally, for video data,
+* You can use a classification model to analyze video data and return a list of categorized shots and segments.
+* You can use an object tracking model to analyze video data and return a list of shots and segments where these objects were detected.
+* An action recognition model can be used to analyze video data and return a list of categorized actions with the moments the actions happened.
+
+In reality you may not be restricted to just one data type and one objective, but instead need to combine multiple data types in different objectives to solve a business problem. AutoMl is a powerful tool that can help across these different data types and objectives
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
