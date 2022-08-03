@@ -495,7 +495,7 @@ If we train a model on known historical data and are happy with the performace t
 
 ### BigQuery ML Key commands
 create the model in SQL:
-````
+```sql
 CREATE OR REPLACE MODEL
         `mydataset.mymodel`
 OPTIONS
@@ -504,12 +504,12 @@ OPTIONS
         ls_init_learn_rate=.15,
         l1_reg=1,
         max_iterations=5 ) AS
- ````
+ ```
  * models have options which you can specify
  * the most important and only required is the model type
 
 Inspect what the model has learned with the ML.WEIGHTS command and filtering on an input column
-````
+```sql
 SELECT
   category,
   weight
@@ -522,22 +522,22 @@ FROM
     WHERE
       processed_input = 'seed')) # try other features like 'school_ncaa'
       ORDER BY weight DESC
-````
+```
 * The output of ML.WEIGHTS is a numerical vallue, and each feature has a weight from negative 1 to 1.
 * The value indicates how important the feature is for predicting the result or label
 * a value close to 0 shows it is not important. a value close to -1 or 1 shows that it is an important feature
 
 To evaluate the model's performace you can run an ML.EVALUATE command against a trained model
-````
+```sql
 SELECT
   *
 FROM
   ML.EVALUATE(MODEL `bracketology.ncaa_model')
-````
+```
 * you get different performance metrics depending on the model type you choose
 
 To make batch predictions, you can use the ML.PREDICT command on a trained model and pass through teh dataset you want to make the prediction on
-````
+```sql
 CREATE OR REPLACE TABLE  `bracketology.predictions` AS (
 SELECT * FROM ML.PREDICT(MODEL `bracketology.ncaa_model`,
 #predcicting for 2018 tournament games (2017 season)
@@ -545,7 +545,7 @@ SELECT * FROM ML.PREDICT(MODEL `bracketology.ncaa_model`,
 `data-to-insights.ncaa.2018_tournament_results`)
 )
 )
-````
+```
 
 __BQML Cheatsheet__
 
