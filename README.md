@@ -441,6 +441,8 @@ BigQuery ML was designed to be simple, like building a model in 2 steps. That si
 * In BigQuery you can mannaully control these or use automatic tunning 
 
 When using structured dataset in BigQuery ML you must choose the appropriate model type which depends on the business goal and datasets
+![image](https://user-images.githubusercontent.com/80007111/182475976-31d3d5ff-530d-440c-8776-ffa13c5da01b.png)
+
 * BigQuery supports supervised and unsupervised models
 * Supervised models are task driven and identify a goal
 * Unsupervised are data driven and identify a pattern
@@ -448,9 +450,440 @@ When using structured dataset in BigQuery ML you must choose the appropriate mod
 Within a supervised model, if your goal is to classify data like whether an email is spam, use logistic regression. If your goal is to predict a number like shoe sales for the next 3 months, use linear regrassion. Within an unsupervised model if your goal is to identify patterns or clusters and then determine the best way to group them. Like grouping random photos of flowers into categories you should use cluster analysis
 
 Once you have your problem outline, its time to decide on teh best model. 
+![image](https://user-images.githubusercontent.com/80007111/182476056-7f8767e8-a082-49d4-baf9-2387621733f8.png)
+
 * categories include classification and regression models
 * There are other model options to choose from along with ML Ops.
 * Logistic regression is an eample of a classification model
 * Linear regression is an example of a regression model
 
 It is recommended that you start with these options then use teh results to benchmark and compare against more complex models such as DNN which may take more time and resources to train and deploy.
+
+In Additon to providing different types of machine learning models, BigQuery supports features to deploy, monitor and manage the ML production called ML Ops
+![image](https://user-images.githubusercontent.com/80007111/182476186-dd8b877c-7f29-42db-a739-54fca4658d2c.png)
+Ops include;
+* importing Tensorflow models for batch prediction
+* exporting models from BigQuery ML for online prediction
+* Hyperparameter turning using Cloud AI Vizier
+
+### Using BigQuery ML to Predict Customer Lifetime Value
+In machine learning you feed in columns of data and let the model figure out the relationship to best predict the label.
+
+A row in the dataset is called an example an observation or an instance
+
+A label is a correct answer which comes from historical data. This is what we use to train the model on in order to predict future data depending on what you want to predict. 
+* A label can eaither be a numeric variable which requires a linear regression model 
+* Or a categorical variable which requires a logistic regression model
+
+All the other columns in a table execp for the label are call features (or potential features)
+* too many features can ruin a model
+* understanding the quality of the data in each column and working to get the most features or more history is often the hardest part of a ML project
+* Combining or transforming feature columns is a process called feature engineering
+
+BigQuery does much of the hard work for you
+* it automaticall one-hot encodes categorical values. This is where categorical data is converted to numeric data to prepare for model training
+* From there BigQuery Ml automatically splits the dataset into training and evaluation data
+
+If we train a model on known historical data and are happy with the performace then we can use it to predict our future data sets
+
+### BigQuery ML project phases
+1. extract, transform and load data into BigQuery (you can enrich your existing data with other data sources by using SQL joins)
+2. Select and preprocess features
+3. create the model inside BigQuery
+4. Evaluate performance of the model
+5. use model to make predictions on new data
+
+### BigQuery ML Key commands
+create the model in SQL:
+````
+CREATE OR REPLACE MODEL
+        `mydataset.mymodel`
+OPTIONS
+        ( model_type='linear_reg',
+        input_label_cols='sales'
+        ls_init_learn_rate=.15,
+        l1_reg=1,
+        max_iterations=5 ) AS
+ ````
+ * models have options which you can specify
+ * the most important and only required is the model type
+
+Inspect what the model has learned with the ML.WEIGHTS command and filtering on an input column
+````
+SELECT
+  category,
+  weight
+FROM
+  UNNEST((
+    SELECT
+      category_weights
+    FROM
+      ML.WEIGHTS(MODEL `bracketology.ncaa__model`)
+    WHERE
+      processed_input = 'seed')) # try other features like 'school_ncaa'
+      ORDER BY weight DESC
+````
+* The output of ML.WEIGHTS is a numerical vallue, and each feature has a weight from negative 1 to 1.
+* The value indicates how important the feature is for predicting the result or label
+* a value close to 0 shows it is not important. a value close to -1 or 1 shows that it is an important feature
+
+To evaluate the model's performace you can run an ML.EVALUATE command against a trained model
+````
+SELECT
+  *
+FROM
+  ML.EVALUATE(MODEL `bracketology.ncaa_model')
+````
+* you get different performance metrics depending on the model type you choose
+
+To make batch predictions, you can use the ML.PREDICT command on a trained model and pass through teh dataset you want to make the prediction on
+````
+CREATE OR REPLACE TABLE  `bracketology.predictions` AS (
+SELECT * FROM ML.PREDICT(MODEL `bracketology.ncaa_model`,
+#predcicting for 2018 tournament games (2017 season)
+(SELECT * FROM
+`data-to-insights.ncaa.2018_tournament_results`)
+)
+)
+````
+
+__BQML Cheatsheet__
+
+* __Label__: Alias a column as 'label', or specify column(s) in OPTIONS using input_label_cols (reminder: labels are what is currently known in training data, but what you want to predict)
+* __Feature__: Table columns used as SQL SELECT statement (`SELECT * FROM ML.FEATURE_INFO(MODEL ``mydataset.mymodel``)` to get info about that column after model is trained)
+* __Model__: An object created in BigQuery that resides in BigQuqery dataset
+* __Model Types__: Linear regression (predict on numeric field), logistic regression (discrete class -- high or low, spam not spam, etc.) (`CREATE OR REPLACE MODEL <dataset>.<name> OPTIONS(model_type='<type>') AS <training dataset>`)
+* __Training Progress__: `SELECT * FROM ML.TRAINING_INFO(MODEL ``mydataset.mymodel```
+* __Inspect Weights__: `SELECT * FROM ML.WEIGHTS(MODEL ``mydataset.mymodel``, (<query>))`
+* __Evaluation__: `SELECT * FROM ML.EVALUATE(MODEL ``mydataset.mymodel``)
+* __Prediction__: `SELECT * FROM ML.PREDICT(MODEL ``mydataet.mymodel``, (<query>))`
+
+## Lab 3
+
+Get the conversion rate:
+
+```sql
+WITH visitors AS(
+SELECT
+COUNT(DISTINCT fullVisitorId) as total_visitors
+FROM `data-to-insights.ecommerce.web_analytics`
+),
+
+purchasers AS(
+SELECT
+COUNT(DISTINCT fullVisitorId) as total_purchasers
+FROM `data-to-insights.ecommerce.web_analytics`
+WHERE totals.transactions IS NOT NULL
+)
+
+SELECT
+total_visitors,
+total_purchasers,
+total_purchasers/total_visitors as conversion_rate
+FROM visitors, purchasers
+```
+
+Find the top 5 selling products:
+
+```sql
+SELECT
+p.v2ProductName,
+p.v2ProductCategory,
+SUM(p.productQuantity) AS units_sold,
+ROUND(SUM(p.localProductRevenue/1000000),2) AS revenue
+FROM `data-to-insights.ecommerce.web_analytics`,
+UNNEST(hits) AS h,
+UNNEST(h.product) AS P
+GROUP BY 1,2
+ORDER BY revenue DESC
+LIMIT 5;
+```
+
+This query:
+1. Creates a table containing a row for all of hits `UNNEST(hits)`
+2. Creates a table containing all of the products in hits `UNNEST(h.product)`
+3. Select the various fields
+4. Groups by product name and product category
+
+The `UNNEST` keyword takes an array and returns a table with a single row for each element in the array.
+`OFFSET` will help to retain the ordering of the array.
+
+```
+SELECT *
+FROM UNNEST(['foo', 'bar', 'baz', 'qux', 'corge', 'garply', 'waldo', 'fred'])
+  AS element
+WITH OFFSET AS offset
+ORDER BY offset;
+
++----------+--------+
+| element  | offset |
++----------+--------+
+| foo      | 0      |
+| bar      | 1      |
+| baz      | 2      |
+| qux      | 3      |
+| corge    | 4      |
+| garply   | 5      |
+| waldo    | 6      |
+| fred     | 7      |
++----------+--------+
+
+```
+
+`GROUP BY 1,2` refers to the first and second items in the select list.
+
+Analytics schema:
+
+https://support.google.com/analytics/answer/3437719?hl=en
+
+__Create the model__
+
+```sql
+CREATE OR REPLACE MODEL `ecommerce.classification_model`
+OPTIONS
+(
+model_type='logistic_reg', # Since we want to classify as A/B
+labels = ['will_buy_on_return_visit'] # Set the thing we want to predict
+)
+AS
+
+#standardSQL
+SELECT
+  * EXCEPT(fullVisitorId) 
+FROM
+
+  # features
+  (SELECT
+    fullVisitorId,
+    IFNULL(totals.bounces, 0) AS bounces,
+    IFNULL(totals.timeOnSite, 0) AS time_on_site
+  FROM
+    `data-to-insights.ecommerce.web_analytics`
+  WHERE
+    totals.newVisits = 1
+    AND date BETWEEN '20160801' AND '20170430') # train on first 9 months
+  JOIN
+  (SELECT
+    fullvisitorid,
+    IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM
+      `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid)
+  USING (fullVisitorId)
+;
+```
+
+After running, the query will create a new ML model in `project:dataset.model`
+
+`EXCEPT` will return all of the rows in the left query not in the right query.
+
+For example:
+
+```sql
+  WITH a AS (
+SELECT * FROM UNNEST([1,2,3,4]) AS n
+
+    ), b AS (
+SELECT * FROM UNNEST([4,5,6,7]) AS n)
+
+SELECT * FROM a
+
+EXCEPT DISTINCT
+
+SELECT * FROM b
+
+-- | n |
+-- | 1 |
+-- | 2 |
+-- | 3 |
+```
+
+
+__Evaluate the model__
+
+One feature we can use to evaluate the model is the receiver operating characteristic (ROC).
+Essentially this shows the quality of a binary classifier by mapping true positive rates against false positive rates.
+
+We want to get the area under the curve as close as possible to 1.0
+
+https://cdn.qwiklabs.com/GNW5Bw%2B8bviep9OK201QGPzaAEnKKyoIkDChUHeVdFw%3D
+
+```sql
+SELECT
+  roc_auc,
+  CASE
+    WHEN roc_auc > .9 THEN 'good'
+    WHEN roc_auc > .8 THEN 'fair'
+    WHEN roc_auc > .7 THEN 'not great'
+  ELSE 'poor' END AS model_quality
+FROM
+  ML.EVALUATE(MODEL ecommerce.classification_model,  (
+
+SELECT
+  * EXCEPT(fullVisitorId)
+FROM
+
+  # features
+  (SELECT
+    fullVisitorId,
+    IFNULL(totals.bounces, 0) AS bounces,
+    IFNULL(totals.timeOnSite, 0) AS time_on_site
+  FROM
+    `data-to-insights.ecommerce.web_analytics`
+  WHERE
+    totals.newVisits = 1
+    AND date BETWEEN '20170501' AND '20170630') # eval on 2 months
+  JOIN
+  (SELECT
+    fullvisitorid,
+    IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM
+      `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid)
+  USING (fullVisitorId)
+
+));
+```
+
+roc_auc is a queryable field
+
+__Improving the model__
+
+We can improve the model by adding more features:
+
+```sql
+CREATE OR REPLACE MODEL `ecommerce.classification_model_2`
+OPTIONS
+  (model_type='logistic_reg', labels = ['will_buy_on_return_visit']) AS
+
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid,
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+
+# add in new features
+SELECT * EXCEPT(unique_session_id) FROM (
+
+  SELECT
+      CONCAT(fullvisitorid, CAST(visitId AS STRING)) AS unique_session_id,
+
+      # labels
+      will_buy_on_return_visit,
+
+      MAX(CAST(h.eCommerceAction.action_type AS INT64)) AS latest_ecommerce_progress,
+
+      # behavior on the site
+      IFNULL(totals.bounces, 0) AS bounces,
+      IFNULL(totals.timeOnSite, 0) AS time_on_site,
+      totals.pageviews,
+
+      # where the visitor came from
+      trafficSource.source,
+      trafficSource.medium,
+      channelGrouping,
+
+      # mobile or desktop
+      device.deviceCategory,
+
+      # geographic
+      IFNULL(geoNetwork.country, "") AS country
+
+  FROM `data-to-insights.ecommerce.web_analytics`,
+     UNNEST(hits) AS h
+
+    JOIN all_visitor_stats USING(fullvisitorid)
+
+  WHERE 1=1
+    # only predict for new visits
+    AND totals.newVisits = 1
+    AND date BETWEEN '20160801' AND '20170430' # train 9 months
+
+  GROUP BY
+  unique_session_id,
+  will_buy_on_return_visit,
+  bounces,
+  time_on_site,
+  totals.pageviews,
+  trafficSource.source,
+  trafficSource.medium,
+  channelGrouping,
+  device.deviceCategory,
+  country
+);
+```
+
+Point: Ensure you use the same training data. Otherwise differences could be due to differences in input, rather than model improvements.
+
+Now we have a better model, we can make predictions.
+
+__Make predictions__
+
+```sql
+SELECT
+*
+FROM
+  ml.PREDICT(MODEL `ecommerce.classification_model_2`,
+   (
+
+WITH all_visitor_stats AS (
+SELECT
+  fullvisitorid,
+  IF(COUNTIF(totals.transactions > 0 AND totals.newVisits IS NULL) > 0, 1, 0) AS will_buy_on_return_visit
+  FROM `data-to-insights.ecommerce.web_analytics`
+  GROUP BY fullvisitorid
+)
+
+  SELECT
+      CONCAT(fullvisitorid, '-',CAST(visitId AS STRING)) AS unique_session_id,
+
+      # labels
+      will_buy_on_return_visit,
+
+      MAX(CAST(h.eCommerceAction.action_type AS INT64)) AS latest_ecommerce_progress,
+
+      # behavior on the site
+      IFNULL(totals.bounces, 0) AS bounces,
+      IFNULL(totals.timeOnSite, 0) AS time_on_site,
+      totals.pageviews,
+
+      # where the visitor came from
+      trafficSource.source,
+      trafficSource.medium,
+      channelGrouping,
+
+      # mobile or desktop
+      device.deviceCategory,
+
+      # geographic
+      IFNULL(geoNetwork.country, "") AS country
+
+  FROM `data-to-insights.ecommerce.web_analytics`,
+     UNNEST(hits) AS h
+
+    JOIN all_visitor_stats USING(fullvisitorid)
+
+  WHERE
+    # only predict for new visits
+    totals.newVisits = 1
+    AND date BETWEEN '20170701' AND '20170801' # test 1 month
+
+  GROUP BY
+  unique_session_id,
+  will_buy_on_return_visit,
+  bounces,
+  time_on_site,
+  totals.pageviews,
+  trafficSource.source,
+  trafficSource.medium,
+  channelGrouping,
+  device.deviceCategory,
+  country
+)
+
+)
+
+ORDER BY
+  predicted_will_buy_on_return_visit DESC;
