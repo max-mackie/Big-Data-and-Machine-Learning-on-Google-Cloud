@@ -887,3 +887,13 @@ SELECT
 
 ORDER BY
   predicted_will_buy_on_return_visit DESC;
+
+### Reading List
+* https://cloud.google.com/bigquery
+* https://cloud.google.com/bigquery#section-5
+* https://cloud.google.com/bigquery/docs/loading-data#choosing_a_data_ingestion_method
+* https://cloud.google.com/blog/products/g-suite/connecting-bigquery-and-google-sheets-to-help-with-hefty-data-analysis
+* https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-e2e-journey
+* https://cloud.google.com/bigquery-ml/docs/tutorials
+
+## Machine Learning Options on Google Cloud
