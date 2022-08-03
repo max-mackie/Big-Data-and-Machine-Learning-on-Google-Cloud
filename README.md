@@ -960,18 +960,67 @@ Finally, for video data,
 
 In reality you may not be restricted to just one data type and one objective, but instead need to combine multiple data types in different objectives to solve a business problem. AutoMl is a powerful tool that can help across these different data types and objectives
 
+### Custom Training
+If you want to code your machine learning model, you can use this option by building a custom training solution with Vertex AI Workbench. 
 
+ Workbench is a single development environment for the entire data science workflow from exploring, to training and then deploying a machine learning model with code.
 
+Before any coding begins, you need to determine what environment you want, your ML training code to use
+*  pre-built container
+* a custom container
 
+if your ML training needs a platform like Tensorflow, Pytorch, Scikit-learn or XGboost and Python code to work with the platform, a pre built container is probably your best solution.
 
+A custom container alternatively is like an empty room with no cabinets, appliances or cookware. You define the exact tools, you need to complete the job.
 
+### Vertex AI
+Some traditional challenges of Machine learning are:
+* Determining how to handle large quantities of data
+* Determining the right machine learning model to train the data
+* Harnessing the required amount of computing power
 
+Challenges of getting ML data into produciton
+* Scalability
+* Monitoring
+* Continuous integration and continuous delivery or deployment
 
+Ease of use challenges
+* Tools require advanced coding skills
+* Take focus away from model configuration
+* No unified workflow
+* Difficulties finding tools
 
+Vertex AI is googles solution to alot of these challenges. It is a unified platform that jbrings oll the components of machine learning ecosystem and  workflow together.
+* In the context of Vertex AI, a unified platform means having one digital experience to create, deploy and manage models over time and at scale.
 
+Vertex AI allows users to build machine learning models with either AutoML, a cloudless solution, or custom training, a code-based solution. custom training enables data scientist to have full control over the development environment and process. Being able to perform such a wide range of tasks in one unified platform has many benefits. This can be summarized with four S's. 
+* Seamless
+* Scaleable
+* Sustainable
+* Speedy
 
+### AI Solutions
 
+![image](https://user-images.githubusercontent.com/80007111/182706675-6a0d4f12-8cd4-4157-9db0-c1c6307d85eb.png)
 
+* The bottom layer is the AI foundation and include the Google Cloud infrastructure and data. 
+* The middle layer represents the AI development platform
+* The top layer represents AI solutions for which there are two groups
+
+Horezontal solutions
+
+Horizontal solutions usually apply to any industry that would like to solve the same problem. 
+
+Examples include
+* Document AI and CCAI. Document AI uses computer vision and optical character recognition, along with natural language processing to create pre-trained models to extract information from documents. The goal is to increase the speed and accuracy of document processing to help organizations make better decisions faster while reducing costs.
+* Contact Center AI or CCAI. The goal of CCAI is to improve customer service in contact centers through the use of artificial intelligence. They can help automate simple interactions, assist human agents, unlock caller insights and provide information to answer customer questions.
+
+Industry solutions
+
+The second group is vertical or industry solutions. This represents solutions that are relevant to specific industries. Examples include, 
+* Retail Product Discovery, which gives retailers the ability to provide a Google quality search and recommendations on their own digital properties, helping to increase conversions and reduce search abandonment,
+* Google Cloud Healthcare Data Engine, which generates healthcare insights and analytics with one end-to-end solution
+* Lending DocAI, which aims to transform the home loan experience for borrowers and lenders by automating mortgage document processing.
 
 
 
