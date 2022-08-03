@@ -1022,7 +1022,13 @@ The second group is vertical or industry solutions. This represents solutions th
 * Google Cloud Healthcare Data Engine, which generates healthcare insights and analytics with one end-to-end solution
 * Lending DocAI, which aims to transform the home loan experience for borrowers and lenders by automating mortgage document processing.
 
-
+### Reading List
+* https://cloud.google.com/training/machinelearning-ai
+* https://cloud.google.com/vertex-ai#section-1
+* https://cloud.google.com/architecture/ml-on-gcp-best-practices
+* https://www.fast.ai/2018/07/23/auto-ml-3/
+* https://cloud.google.com/vertex-ai/docs/training/containers-overview?_ga=2.143882930.-601714452.1627921693
+* https://cloud.google.com/deep-learning-containers/docs/overview#pre-installed_software
 
 
 
