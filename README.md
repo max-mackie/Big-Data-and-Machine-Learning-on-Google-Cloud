@@ -1114,9 +1114,124 @@ MLOps provides a set of best practices on the back end to automate this process.
 2. The second option is to deploy using batch prediction. This option is best when no immediate response is required and accumulated data should be processed with a single request. 
   * For example sending out new ads every other week based on the user's recent purchasing behavior and what's currently popular on the market.
 3. The final option is to deploy using offline prediction. This option is best when the model should be deployed in a specific environment off the cloud. 
+![image](https://user-images.githubusercontent.com/80007111/183047034-d0422665-9a73-4968-83fe-ee3ae934fcb7.png)
+
 
 Model Monitoring
 The backbone of MLOps on vertex AI is a tool called vertex AI pipelines. It automates monitors and governs machine learning systems by orchestrating the workflow in a serve earless manner. 
 * If something goes wrong, it automatically triggers warnings based on a predefined threshold. 
 
 With vertex AI workbench, you can define your own pipeline. You can do this with pre built pipeline components. Which means that you primarily need to specify how the pipeline is put together using components as building blocks. 
+
+### Vertex AI: Predicting Loan Risk with AutoML
+#### Create a dataset
+Navigation menu > Vertex AI > Datasets > create dataset
+* for the data type and objective, click Tabular and then select Regression / classification then create
+
+#### Upload data
+For the data source, select **Select CSV files form Cloud Storage**
+For import file path enter: spls/cbl455/loan_risk.csv
+Click Continue
+
+To see the descriptive statistics for each column of your dataset, click generate statistics then click each column name to show analytical charts
+
+#### Train your model
+Click **Train new Model**
+Training Method
+* For objective select Classification then click continue
+
+Model Details
+* Give the model a name and leave the target column as default then click continue
+
+Training Options
+* Specify which columns you want to include in the model,
+  * Click the minus sign on the CLientID row to exclude it from training 
+* Click advanced options to select different optimisation objectives e.g. log loss or AUC ROC
+
+Compute and pricing
+* For budget enter **1**
+  * Training your AutoML model for 1 node hour is typically a good start for understanding whether there is a relationship between the features and label you've selected. From there, you can modify your features and train for more time to improve model performance
+* Leave early stopping enabled then click start training 
+
+#### Evaluate the model performance (demonstration only)
+If you had a model trained, you could navigate to the Models tab in Vertex AI.
+1. Navigate to the Models.
+2. Click on the model you just trained.
+3. Browse the Evaluate tab.
+However in this lab, you can skip this step since you use a pre-trained model.
+
+**The Precision / Recall curve**
+![image](https://user-images.githubusercontent.com/80007111/183067181-a93c4aee-2f38-4892-adc6-318b52e02056.png)
+The confidence threshold determines how a ML model counts the positive cases. A higher threshold increases the precision, but decreases recall.
+* you can manually adjest the threshold to observe its impace on precision and recall and find the best tradeoff point between the two
+
+**The Confusion matrix**
+A confusion matrix tells you teh percentage of examples from each class in your test set that your model predicted correctly
+![image](https://user-images.githubusercontent.com/80007111/183067594-8651749e-3d3d-449b-be6a-c296fc0bcf77.png)
+Here the model is able to predict 100% of the repay examples and 87% of the default examples
+* this could be improved by adding more data, engineering new features, and changing the training method
+
+**The feature importance**
+In Vertex AI, feature importance is displayed through a bar chart to illustrate how each feature contributes to a prediction.
+![image](https://user-images.githubusercontent.com/80007111/183067921-458733f0-e470-428e-8f4e-3fcde312dc01.png)
+From this you may decide to remove the least important features next time you train a model or to combine two of the more significant features into a feature cross to see if this improves model performance
+Feature importance is an example from Vertex AIs machine learning functionality called Explainable AI. Which i sa set of tools and frameworks to help understand and interpret predicitons made by machine learning models
+
+#### Deploy the model (demonstration only)
+A model resource in Vertex can have multiple endpoints associated with it, and you can split traffic between endpoints
+
+**Create and define an endpoint**
+On the model page go to the **Deploy and test** tab and click **Deploy to endpoint**
+Give the endpoint a name and click continue
+
+**Model Setting and Monitoring**
+leave the traffic splitting setting as is. As the machine type select **n1-standard-8, 8 vCPUs, 30 GiB memory.** then click continue
+In Model monitoring click continue then in Model obkjectives > Training data source, select Vertex AI dataset and choose your own dataset
+In Target column, enter default
+Leave the remaining settings as is and click depliy
+
+#### SML Bearer Token
+To allow the pipeline to authenticate, and be authorised to call the endpoint to get the predictions, you will need to provide your Bearer Token
+1. log in to https://gsp-auth-kjyo252taq-uc.a.run.app/
+2. When logging in, use your student email address and password.
+3. Copy the token
+
+### Get Predictions
+In this section we will work with the Shared Machine Learning servce (SML) to work with an existing trained model
+![image](https://user-images.githubusercontent.com/80007111/183069670-03fb4ee3-5197-47d9-b71d-bc17480b0197.png)
+To use the trained model you will need to create some environment variables
+1. Open a Cloud Shell window.
+
+2. Replace INSERT_SML_BEARER_TOKEN with the bearer token value from the previous section:
+* AUTH_TOKEN="INSERT_SML_BEARER_TOKEN"
+
+3. Download the lab assets:
+* gsutil cp gs://spls/cbl455/cbl455.tar.gz .
+
+4. Extract the lab assets:
+* tar -xvf cbl455.tar.gz
+
+5. Create an ENDPOINT environment variable:
+* ENDPOINT="https://sml-api-vertex-kjyo252taq-uc.a.run.app/vertex/predict/tabular_classification"
+
+6. Create a INPUT_DATA_FILE environment variable:
+* INPUT_DATA_FILE="INPUT-JSON" 
+
+The file INPUT-JSON is composed of the following values:
+
+age	ClientID	income	        loan
+40.77	997	        44964.01	3944.22
+
+Test the SML Service by passing the parameters specified in the environment variables:
+1. Perform a request to the SML service:
+./smlproxy tabular \
+  -a $AUTH_TOKEN \
+  -e $ENDPOINT \
+  -d $INPUT_DATA_FILE
+  
+![image](https://user-images.githubusercontent.com/80007111/183078758-069bb104-1815-43d9-8c63-ba9002065f7f.png)
+
+ 
+This query should result in 
+
+
