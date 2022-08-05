@@ -1031,4 +1031,73 @@ The second group is vertical or industry solutions. This represents solutions th
 * https://cloud.google.com/deep-learning-containers/docs/overview#pre-installed_software
 
 
+## The Machine Learning Workflow with Vertex AI
+
+### Introduction
+
+Machine Learning vs Traditional Programming
+
+IN traditional programming a computer can only follow the algorithms that a human has set up. Machine learning you expect the machine to learn from the provided data and examples to solve the puzzle on its own
+
+Key stages of machine learning process
+* Data preparation
+  * A model needs a large amount of data to learn from
+  * This data can either be real time streaming or batch data and it can either be structured or unstructured data
+* Model training
+  * A model needs a huge amount of iterative training
+* Model serving
+  * A model needs to actually be used in order to predict results
+  * This is when the model is deployed, monitored and managed
+
+Vertex AI supports this workflow with 2 options
+1. AutoML: codeless
+2. Custom training: code-based
+
+### Data Preparation
+
+Data preparation involves uploading the data and then preparing the data through feature engineering.
+
+Uploading data requires providing a meaningful name for the data set and selecting the data type and objective (image, tabular, text, video) Selecting the correct data type and objective you need to check data requirements and add labels to the data. A label is a training target. Labels can be added manually or can be added using googles paid label service via the Vertex console.
+
+A feature refers to a factor that contributes to the prediction. It is an independent variable in statistics or a column in  a table. To help prepare features Vertex AI has feature store. This is a centralised repository to organise, store and serve machine learning features. It aggregates all the different features from different sources and updates them to make them available from a central repository. Engineers can then use the features available in the feature store dictionary to build a dataset. The benifits of Vertex AI feature store are:
+* Features are sharable for training or serving tasks
+* Features are reusable
+* Features are scalable
+* Features are easy to use
+
+### Model training
+This stage involves two steps:
+* Model training
+* Model evaluation
+
+AI vs ML
+Artificial intelligence is an umbrella term that includes anything related to computers mimicking human intelligence (e.g spell check) Machine learning is a subset of AI that mainly refers to supervised and unsupervised learning. Deep learning or DNNs are a subset of ML that adds layers in between input data and outpuyt results to make a machine larn at more depth. Supervised learning is task driven and identifies a goal whereas unsupervised learning is data driven and identifies a pattern.
+![image](https://user-images.githubusercontent.com/80007111/183029654-58537676-e569-4c8b-95ad-ccf0a2a0b1d8.png)
+
+![image](https://user-images.githubusercontent.com/80007111/183030192-03549f64-8a68-4cba-82a9-fd4ea0f4584a.png)
+
+### Model Evaluation
+
+Models need to be evaluated continously when being developed. Vertex AI provides extensive evaluation metrics to help determine performace. Amoung these metrics are two sets of measurements:
+* The first is based on the confusion matrix
+* The second is based on feature importance
+
+Confusion matrix is a specific performance measurement for machine learning classification problems. It is a table with combinations of predicted and actual values
+![image](https://user-images.githubusercontent.com/80007111/183043840-5636f3dc-07c9-4f77-a408-6354f82acbc3.png)
+
+Recall refers to all the positive cases and looks at how many were predicted correctly. Recall = TP/(TP + FN)
+
+Precision refers to all the cases predicted as positive and how many are actually positive Precision = TP/(TP+FP)
+
+![image](https://user-images.githubusercontent.com/80007111/183044494-4a17d453-7ea6-40e6-861b-11ff440b33db.png)
+![image](https://user-images.githubusercontent.com/80007111/183044551-97f7b22f-7113-4fe4-b967-bdbf9a1a36ba.png)
+
+Precission and recall are often a trade off, depending on your use case. you may need to optimize for one or the other. In Vertex AI, the platform visualises the precision and the recall curve, so they can be adjusted based on the problem that needs solving
+
+Feature Importance
+In vertex AI feature importance is displayed through a bar chart to illustrate how each feature contributes to a prediction. the longer a bar the more important
+
+Feature importance is just one example of Vertex AI's comprehensive machine learning functionality called Explainable AI. Explainable AI is a set of tools and frameworks to help understand and interpret predictions made by machine learning models.
+
+
 
