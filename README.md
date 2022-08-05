@@ -1099,5 +1099,24 @@ In vertex AI feature importance is displayed through a bar chart to illustrate h
 
 Feature importance is just one example of Vertex AI's comprehensive machine learning functionality called Explainable AI. Explainable AI is a set of tools and frameworks to help understand and interpret predictions made by machine learning models.
 
+### Model Deployment and Monitoring
 
+ MLOps combines machine learning development with operations. And applies similar principles from DevOps to machine learning models. MLOps aims to solve production challenges related to machine learning. In this case this refers to building an integrated machine learning system and operating it in production.
+ * These are considered to be some of the biggest pain points by the ML practitioners community. Because both data and code are constantly evolving A machine learning. 
 
+Practicing MLOps means advocating for automation and monitoring at each step of the ML system construction. This means adopting a process to enable continuous integration, continuous training and continuous delivery. 
+
+MLOps during Model Deployment
+MLOps provides a set of best practices on the back end to automate this process. There are three options to deploy a machine learning model. 
+1. The first is to deploy to an end point. This option is best when immediate results with low latency are needed. 
+  * Such as making instant recommendations based on a user's browsing habits whenever they're online. 
+  * A model must be deployed to an end point before that model can be used to serve real time predictions. 
+2. The second option is to deploy using batch prediction. This option is best when no immediate response is required and accumulated data should be processed with a single request. 
+  * For example sending out new ads every other week based on the user's recent purchasing behavior and what's currently popular on the market.
+3. The final option is to deploy using offline prediction. This option is best when the model should be deployed in a specific environment off the cloud. 
+
+Model Monitoring
+The backbone of MLOps on vertex AI is a tool called vertex AI pipelines. It automates monitors and governs machine learning systems by orchestrating the workflow in a serve earless manner. 
+* If something goes wrong, it automatically triggers warnings based on a predefined threshold. 
+
+With vertex AI workbench, you can define your own pipeline. You can do this with pre built pipeline components. Which means that you primarily need to specify how the pipeline is put together using components as building blocks. 
