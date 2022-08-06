@@ -200,3 +200,41 @@ ON wx.date = bk.trip_date
 GROUP BY wx.rainy
 ```
 * Above shows how queries can use different datasets withing a query
+
+## Building Data Lakes
+### Introduction to Data Lakes
+A data lake is a place where you can securely store various types of data of all scales for processing and analytics.
+![image](https://user-images.githubusercontent.com/80007111/183259977-da98e8f4-7e4c-4c31-9a35-a202774a5e69.png)
+
+Components of a Data Engineering ecosystem
+* Data sources
+* Data sinks
+  * Central data lake repository
+  * Data warehouse
+* Data pipelines (batch and streaming)
+* High-level orchestration workflows
+
+Construction analogy
+1. Raw materials need to be brought to the job site (into the data lake)
+2. Materials need to be cut and transformed for purpose and stored (pipelines to data sinks)
+3. The actual building  is hte new insight or ML model etc.
+4. The supervisor directs all aspects and teams on the project (workflow orchestration)
+
+Here you can see that the data lake is the first line of defense in an enterprise data enviroment. It is general aka "give me whatever data at whatever volumne, variety, formats and velocity that you got, i can take it" The data lake generally serves as a single consolidated place for all the raw data like a durable staging area.
+
+The suite of big data products on Google Cloud
+![image](https://user-images.githubusercontent.com/80007111/183260392-d31aeab1-82b9-4dc6-9a1b-55420131bb72.png)
+
+Data lake vs data warehouse
+* A data lake is a capture of every aspect of your business operation. The data is tored in its natural/raw format, usually as object blobs or files
+  * Retain all data in its native format
+  * Support all data types and all users
+  * Adapt to changes easily
+  * Tends to be application-specific
+* In contrast, a data warehouse typically has the following characteristics
+  * Typically loaded only after a use case is defined
+  * Processed/organised/transformed
+  * Provide faster insights
+  * Current/historical data for reporting
+  * Tends to have consistent schema shared across applications 
+
