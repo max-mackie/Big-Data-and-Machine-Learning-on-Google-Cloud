@@ -151,5 +151,18 @@ One solution for data governance is the Cloud data Catalog and the Data Loss Pre
   * Data Catalog provides a single unified user experience for discovering those data sets quickly.
 * Data Catalog provides a single unified user experience for discovering those data sets quickly.
 
+### Buld Production-Ready Pipelines
+Once the data lakes and data warehouses are set up and governance policy is in place it is time to productionalise the operation and automate and monitor as much as possible
+* It has to be an end-to-end and scalable data processing system.
 
+Common questions that should be asked at this stage are:
+* How can we ensure pipeline health and data cleanliness
+* How do we productionalise these pupelines to minimise maintenace and maximise up-time?
+* How do we respond and adapt to changing schemas and business needs
+* Are we using the latest data engineering tools and best practaces
 
+### Recap
+![image](https://user-images.githubusercontent.com/80007111/183258857-003055da-6591-467a-93db-c277ba1d28dc.png)
+https:github.com/gregsramblings/google-cloud-4-words
+
+### Using BigQuery to do Analysis
