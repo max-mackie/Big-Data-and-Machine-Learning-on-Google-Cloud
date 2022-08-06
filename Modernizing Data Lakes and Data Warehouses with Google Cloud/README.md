@@ -238,3 +238,42 @@ Data lake vs data warehouse
   * Current/historical data for reporting
   * Tends to have consistent schema shared across applications 
 
+### Data Storage and ETL Options on Google Cloud
+Storage options for your data on Google Cloud
+* Cloud Storage
+  * catch all storage
+* Cloud SQL
+  * relational databases
+* Cloud Spanner
+  * relational databases
+* Firestore
+  * NoSQL data
+* Cloud Bigtable
+  * NoSQL data
+
+The path your data takes to get to the cloud depends on 
+* Where your data is now
+* How big your data is
+* Where it has to go (data sink)
+* How much transformation is needed
+
+The method you use to load data depends on how much transformation is needed
+
+Extract and Load (EL)
+* Used when data can be imported as is into a system. e.g. when importing data from a database where the source and the target have the same schema
+Extract Transform and Load (ETL)
+* Used when the transformations you want to perform are small and do not greatly reduce the amount of data that you have.
+* Eg in BigQuery you could load the data then use SQL to transform the data and write a new table
+Extract Load and Transform (ETL)
+* when you want to extract the data, apply a bunch of processing to it, and then load it into the Cloud product. 
+* This is usually what you pick when this transformation is essential or if this transformation greatly reduces the data size, 
+  * so by transforming the data before loading it into the Cloud, you might be able to greatly reduce the network bandwidth that you need.
+* If you have your data in some binary proprietary format and you need to convert it before loading, then you need ETL as well. 
+* ETL is a data integration process in which transformation takes place in an intermediate service before it is loaded into the target. 
+  * For example, the data might be transformed in a data pipeline like dataflow before being loaded into BigQuery.
+  
+BigQuery is slightly unique as you may end up not even loading the data into BigQuery and still can query off of it. 
+* Avro, ORC, and Parquet files are all now supported for federated querying.
+
+### Building a Data Lake using Cloud Storage
+
