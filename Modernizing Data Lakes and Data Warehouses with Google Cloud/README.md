@@ -110,6 +110,7 @@ If you have SQL Server MySQL or PostgresSQL as your relational database, you can
 * Other data engineers.
 
 The machine learning Engineer
+
 They will often partner with data engineering teams to build pipelines and data sets for use in their models. Two common questions you may get asked are:
 * How long does it take for a transaction to make it from raw data all the way into the data warehouse
   * They're asking this because any data that they train their models on must also be available at prediction time as well.
@@ -129,15 +130,26 @@ One of the Google Cloud products that helps manage the performance of dashboards
 * BI Engine is a fast in memory analysis service that is built directly into BigQuery and available to speed up your business intelligence applications.
 
 Other Data Engineers
+
 Other data engineers will rely on the up time and performance of your data warehouse and pipelines for their downstream data lakes and data warehouses. They will often ask;
 * How can you ensure that the data pipeline we depend on will always be available
 * We are noticing high demand for certain really popular datasets. How can you monitor and scale the health of your entire data ecosystem
 
 One Popular way is to use the built in cloud monitoring of all resources on Google Cloud. you can set up alerts and notifications for metrics like query count or bytes of data processed. So you can better track usage and performance. Cloud audit logs can be used to view actual query job information to see granular level details about which queryies were executed and by whom.
 
+### Manage data access and governance
+ngineering team will be asked to set up data access policies and overall governance of how data is to be used.
+* This includes critical topics such as privacy and security
+A data governance model should outline
+* who should and should not have access
+* How is personally identifiable information like phone numbers or email addresses handled
+* basic tasks like how will our end users discover the different data sets we have for analysis?
 
-
-
+One solution for data governance is the Cloud data Catalog and the Data Loss Prevention API. 
+* The Data Catalog makes all the metadata about your data sets available to search for your users.
+  * group data sets together with tags flag certain columns as sensitive, etc.
+  * Data Catalog provides a single unified user experience for discovering those data sets quickly.
+* Data Catalog provides a single unified user experience for discovering those data sets quickly.
 
 
 
