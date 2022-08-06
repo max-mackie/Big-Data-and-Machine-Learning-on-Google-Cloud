@@ -276,4 +276,25 @@ BigQuery is slightly unique as you may end up not even loading the data into Big
 * Avro, ORC, and Parquet files are all now supported for federated querying.
 
 ### Building a Data Lake using Cloud Storage
+Qualities that Cloud Storage contributes to data engineering solutions:
+* Persistence
+  * Data in cloud storage persists beyond the lifetime of VSs or clusters. It is also relatively inexpensive compared to compute so it can be advantagous to cashe the results of previous computations in cloud storage. Cloud storage is an boject store so it stores and retrieves binary objects without regard to what data is contained in the objects
+* Durability
+  * Data stored in cloud storage will stay there forever 
+* Strong consistency
+  *  You can share data globaly but it is encrypted and completely controlled and private if you want it to be. (might not apply here?)
+* Availability
+  * I tis a global service, and you can reach the data from anywhere
+* High throughput  
+  * Data is served up with moderate latency and high throughput.
+
+As a data engineer you need to understand how cloud storage accomplishes these apperently contradictory qualities and when and how to employ them.
+
+A lot of cloud storages amazing properties have to do with the fact that it is an object store and other features are build on top of that. The 2 main entities in cloud storage are 
+* Buckets
+  *   Buckets are containers for objects
+  *   They are identifies 
+* Objects
+
+1;39 is the time on the video
 
