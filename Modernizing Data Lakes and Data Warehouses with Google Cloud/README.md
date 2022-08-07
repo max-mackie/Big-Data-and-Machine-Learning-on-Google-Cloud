@@ -368,5 +368,45 @@ Specialist use cases supported by cloud storage:
 * Composite objects
 
 ### Store all sorts of data types
+Cloud Storage is not the only choice when it comes to storing data on Google Cloud
+![image](https://user-images.githubusercontent.com/80007111/183290577-9b763ec1-d39b-4512-9edd-39fc9c0e89e1.png)
+Cloud Storage
+* Even though it has low-latency it is not low enough to support high-frequency writes
+* For transactional workloads use Cloud SQL or Firestore depending on whether you want to use AQL or NoSQL.
+* You dont want to use it for analytics unstructured data as you will spend significant amount of compute parsing data depending on the latency required
+  * It is better to use Cloud Bigtable or BigQuery for analytics workloads on structured data depending on the latency required.
 
+Transactional vs Analytics Workloads
+![image](https://user-images.githubusercontent.com/80007111/183292898-c4b26935-a2ab-4fdc-aa3e-27a05c9e3831.png)
+* Transactional systems 
+  * Transactional systems are write-heavy (80% writes and 20% reads)
+  * These tend to be operational systems that require updating frequently (e.g. inventory system)
+* Analytical systems
+  * These can be periodically populated from the operation systems.
+    * e.g. this could be used once a day to generate a daily sales report
+  * Such a report will have to read a bunch of data but wont be required to write much
+  
+OLAP systems (Online Analytical Processing)
+OLTP system (Online Transaction Processing)
+* Data engineers build the pipelines to populate the OLAP system from the OLTP system
+  * One simple way might be to export the database as a file and load it into the data warehouse (EL)
+* On Google Cloud the data warehouse tends to be BigQuery
+  * There is a limit to the size of the data that you can load directly to BigQuery as network might be a bottlenexk
+  * Instead we can load first into Cloud Storage then load to BigQuery.
+    * This is because Cloud Storage supports multithreaded resumable loads (gsutil -m)
+    * This will also be faster due to the high throughput it offers
+* For transactional workloads there are a few options for relational databases.
+  * CloudSQL
+    * This is the defaultchoice 
+    * It is much more cost effective
+  * Cloud Spanner
+    * But if you require a globally distributed database then use Cloud Spanner
+    * The true time capability of Spanner is very appealing for this kind of use case
+    * You may also choose Spanner if your database is too big to fit into a single CloudSQL
+      * If the database is many gigabytes you need a distributed database
+    * The scalability of Spanner is very appealing for this use case
+    
+* For analytical work the defualt choice is BigQuery as it is the most cost effective
+  * However if you require high throughput inserts more than millions of rows per second or you require a low latency on the order of milliseconds then use Cloud Bigtable.
+   
 
