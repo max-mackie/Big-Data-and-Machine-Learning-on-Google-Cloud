@@ -292,9 +292,39 @@ As a data engineer you need to understand how cloud storage accomplishes these a
 
 A lot of cloud storages amazing properties have to do with the fact that it is an object store and other features are build on top of that. The 2 main entities in cloud storage are 
 * Buckets
-  *   Buckets are containers for objects
-  *   They are identifies 
+  * Buckets are containers for objects
+  * They are identified in a single global unique name space so every bucket name is unique
+  * Buckets are associated with a particular region or with multiple regions. 
+    * Choosing a region close to where the data will be processed will reduce latency, and if processing data within the region, you will save on network egress charges
 * Objects
+  * Objects exist inside of buckets and not apart from them
+  * When an Bucket is stored, Cloud Storage replicates it and if an object is ever lost or corrupted it replaces it with the copy
+    * This is how cloud storage achieves great reliability 
+  * When an object i sretrieved, it is served from the closes replica to the requester 
+    * This is how low latency is acheived
+  * Multiple requesters could be retrieving the objects at the same time from different replicas
+    * This is how high throughput is achieved
+  * Metadata is information about the object. Additional cloud stroage features use the metadata for purposes such as access control, compression, encryption and lifecycle management
+  ![image](https://user-images.githubusercontent.com/80007111/183284184-4938d077-6a92-45ce-9e0f-1d212bd9d499.png)
 
-1;39 is the time on the video
+You may have a variety of storage requirements for a multitude of use cases. Cloud storage offers different classes to cater for these requirements, and these are based on how often data is accessed.
+![image](https://user-images.githubusercontent.com/80007111/183284256-ebc37770-54e1-4817-83e6-2a04d534c60c.png)
+
+Cloud Storage uses the bucket name and object name to simulate a file system
+![image](https://user-images.githubusercontent.com/80007111/183285065-c188909f-a1f8-4248-9dd8-68e671e2ae8c.png)
+
+The forward slashes are just characters in the name. If this path we're in a file system, it would appear as a set of nested directories, beginning with "de" class. 
+* Now, for all practical purposes, it works like a file system. But there are some differences. 
+  * For example, imagine that you wanted to move all the files in the 0 2 directory to the 03 directory inside the modules directory. you have to search through all objects in the bucket looking for all objects that contain 02 in the right position. For large buckets this can take a long time.
+    * During the move there will be list inconsistency with some files in the old directory and some in hte new directory
+
+A best practice when nameing is to avoid the use of sensitve information as part of bucket name. Because bucket names are in a global name space. 
+
+Cloud storage can be accessed using a file access method that allows you, for example, to use a copy command from a local file directly to cloud storage. Use the tool G Sutil to do this. Cloud storage can also be accessed over the Web. The site, storage dot cloud dot google dot com, uses TLS https to transport your data, which protects credentials as well as data in transit.
+
+object management features
+* You can set a retention policy on all objects in the bucket, 
+  * e.g. the object should expire after 30 days. 
+* You can also use versioning so that multiple versions of an object are tracked and available if necessary. 
+* You might even set up lifecycle management to automatically move objects that haven't been accessed in 30 days to near line and after 90 days to cold line.
 
