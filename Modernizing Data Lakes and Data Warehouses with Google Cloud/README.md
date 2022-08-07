@@ -328,3 +328,45 @@ object management features
 * You can also use versioning so that multiple versions of an object are tracked and available if necessary. 
 * You might even set up lifecycle management to automatically move objects that haven't been accessed in 30 days to near line and after 90 days to cold line.
 
+### Secure Cloud Storage
+Securing Your Data Lake running on Cloud Storage is of paramount importance. Cloud Storage implements two completely separate but overlapping methods of controlling access to objects. 
+* IAM Policy
+  * IAM is standard across the Google Cloud.
+  * It is set at the bucket level and applies uniform access rules to all objects within a bucket#
+  * IAM provides project roles and bucket roles including
+    * Bucket reader
+    * Bucket writer
+    * Bucket owner
+    * The ability to create or change access control lists is an IAM bucket role and the ability to create and delete buckets and to set IAM Policy is a project level role.
+* Access Control Lists.
+  * These can be applied at the bucket level or on an individual object so provides more fine-grained access control.
+  * When buckets are created you are offered to the option of disabling access lists and only ising IAM
+  
+All data in Google Cloud is encrypted at rest and in transit. There is no way to turn this encryption off. The encryption is done by Google using encryption keys that we manage, Google Managed Encryption Keys or GMEK. 2 levels of encryption are used:
+* First, the data is encrypted using a data encryption key. 
+* Then the data encryption key itself is encrypted using a key encryption key or KEK. 
+  * The KEKs are automatically rotated on a schedule, and the current KEK stored in Cloud KMS, Cloud Key Management Service.
+  
+This is automatic behaviour but you can manage the KEK yourself.
+![image](https://user-images.githubusercontent.com/80007111/183289719-200f7897-8c69-4f77-b5a6-13c171447532.png)
+* Which data encryption option you use depends on business, legal and regulatory requirements. Please talk to your company's legal counsel.
+
+The fourth encryption option is client-side encryption.
+* Client-side encryption simply means that you have encrypted the data before it is uploaded and have to decrypt the data yourself before it is used. 
+  * Cloud Storage still performs GMEK, CMEK or CSEK encryption on the object. It has no knowledge of the extra layer of encryption you may have added.
+ 
+Specialist use cases supported by cloud storage:
+* Cloud storage supports logging of data access and these logs are immutable.
+* For audit purposes, you can place a hold on an object and all operations that could change or delete the object are suspended until the hold is released.
+* You can also lock a bucket and no changes or deletions can occur until the lock is released.
+* Finally, there is the lock retention policy previously discussed and it continues to remain in effect and prevent deletion whether a bucket lock or object hold are enforce or not.
+  * Data locking is different from an encryption. Where encryption prevents someone from understanding the data, locking prevents them from modifying the data.
+* Decompressive coding
+* Requester pays
+* Signed URLs for anonymous sharing
+* Period expirations
+* Composite objects
+
+### Store all sorts of data types
+
+
