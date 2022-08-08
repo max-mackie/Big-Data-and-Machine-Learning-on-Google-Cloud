@@ -408,5 +408,60 @@ OLTP system (Online Transaction Processing)
     
 * For analytical work the defualt choice is BigQuery as it is the most cost effective
   * However if you require high throughput inserts more than millions of rows per second or you require a low latency on the order of milliseconds then use Cloud Bigtable.
-   
+
+### Cloud SQL as a relational Data Lake
+Cloud SQL is the default choice for OLTP (online transaction processing)
+* Clouds SQL is a service that delivers fully managed relational databases.
+* It handes tasks such as
+  * applying patches and updates 
+  * Managing backups 
+  * Configuring replications.
+
+Cloud SQL can be used with App Engine using standard drivers. You can configure a Cloud SQL instance to follow an App Engine application
+
+Compute Engine instances can be authorised to access Cloud SQL instances using an external IP address. Cloud SQL instances can be configured with a preferred zone.
+
+Cloud SQL can be used with external applications and clients. Standard tools can be used to administer databases. External read replicas can be configured
+
+Security is managed
+* Google security
+  * Cloud SQL customer data is encrypted when on Google's internal networks and when stored in database tables, temporary files and backups. 
+  * Every Cloud SQL instance includes a network firewall allowing you to control network access to your database instance by granting access.
+* Managed backups
+  * upto 7 backups for each instance
+* Vertical scaling (read and write)
+  * You can vertically scale Cloud SQL just increase your machine size scale up to 64 processor cores and more than 100 gigabytes of RAM.
+* Horizontal scaling (read)
+  * Horizontally you can quickly scale out with read replicas. Google Cloud SQL supports three read replica scenarios. 
+    * Cloud SQL instances replicating from a Cloud SQL primary instance. 
+    * Cloud SQL instances replicating from an external primary instance. 
+    * External, MySQL instances replicating from a Cloud SQL primary instance.
+* Automatic replicaiton
+* If you need horizontal read write scaling consider Cloud Spanner
+
+In the special case of Fail Over, Cloud SQL supports this
+* Clouds SQL instances can be configured with a fail over replica in a different zone in the same region.
+  * In the event of a data center outage, a Cloud SQL instance will automatically become available in another zone.
+* If the primary database has issue not caused by outage then fail over doesnt occur hut it can be initiated manually
+  * In this case the failover replica is charged as a separate instance
+  * Existing connections to the instance are closed
+  * The replica becomes the primary
+* You can use the failover replica as a read replica to offload read operations from the primary
+
+Fully managed vs Serverless
+* By fully managed, we mean that the service runs on hardware that you can control. (You can SSH into a Cloud SQL instance) But Google helps you manage the instance by automating backups and setting up fail over instances, etc.
+* Serverless is the next step up. You can treat a serverless product as just an API that you are calling. You pay for using the product but don't have to manage any servers.
+
+modern serverless data management architecture
+![image](https://user-images.githubusercontent.com/80007111/183374172-bd31dafb-7509-4b4d-ba76-8445859f171a.png)
+
+* Big Query is serverless, so are Pub/Sub for asynchronous messaging and DataFlow for parallel data processing.
+  * You can think of cloud storage as being serverless as well. Sure, cloud storage uses discs, but you never actually interact with the hardware. 
+  * One of the unique things about Google Cloud is that you can build a data processing pipeline of well designed components, all of which are fully serverless. 
+* Data process, on the other hand, is fully managed. It helps you run spark and hadoop workloads without having to worry about setup. 
+* Given the choice between doing a brand new project on Big Query or data flow, which are serverless and data processing, which is fully managed. 
+  * All other things being equal, choose the serverless product.
+
+
+
 
