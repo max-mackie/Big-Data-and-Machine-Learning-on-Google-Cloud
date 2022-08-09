@@ -462,6 +462,194 @@ modern serverless data management architecture
 * Given the choice between doing a brand new project on Big Query or data flow, which are serverless and data processing, which is fully managed. 
   * All other things being equal, choose the serverless product.
 
+### Loading Taxi Data into Google CLoud SQL 2.5
+#### Activate Google Cloud Shell
+Google Gloud shell is a virtual machine that is loaded with development tools it offers 5gb home directory and provides command-line access to your GCP resources. To launch go to the top right of GCP concole and click the Open Cloud Shell button.
+* gcloud is the command-line tool for GCP and it comes pre installed on Cloud Shell
+  * To list the current account name use: _gcloud auth list_
+  * To list the project ID use: _gcloud config list project_
+  * For full documentation see https://cloud.google.com/sdk/gcloud
+ 
+#### Preparing your environment
+Create environment variables that will be used later in the lab for your project ID and the storage bucket that will contain your data
+```
+export PROJECT_ID=$(gcloud info --format='value(config.project)')
+export BUCKET=${PROJECT_ID}-ml
+```
+
+#### Create a Cloud SQL instance
+1. To create a Cloud SQL instance use this code:
+```
+gcloud sql instances create taxi \
+    --tier=db-n1-standard-1 --activation-policy=ALWAYS
+```
+2. Set a root password for the Cloud SQL instance:
+---
+gcloud sql users set-password root --host % --instance taxi \
+ --password Passw0rd
+---
+3. When prompted for the password type Passw0rd and press enter this will update root password
+4. Now create an environment variable with the IP address of the Cloud Shell:
+```
+export ADDRESS=$(wget -qO - http://ipecho.net/plain)/32
+```
+5. Whitelist the Cloud Shell instance for management access to your SQL instance:
+```
+gcloud sql instances patch taxi --authorized-networks $ADDRESS
+```
+6. Get the IP address of your Cloud SQL instance by running:
+```
+MYSQLIP=$(gcloud sql instances describe \
+taxi --format="value(ipAddresses.ipAddress)")
+```
+* you can check the variable MYSQLIP: echo $MYSQLIP
+  * You should get an IP address as an output
+
+7. Create the taxi trips table by logging into the mysql command line interface
+```
+mysql --host=$MYSQLIP --user=root \
+      --password --verbose
+```
+8. Pasete the following content into the command line to create the schema for the trips table
+```
+create database if not exists bts;
+use bts;
+drop table if exists trips;
+create table trips (
+  vendor_id VARCHAR(16),		
+  pickup_datetime DATETIME,
+  dropoff_datetime DATETIME,
+  passenger_count INT,
+  trip_distance FLOAT,
+  rate_code VARCHAR(16),
+  store_and_fwd_flag VARCHAR(16),
+  payment_type VARCHAR(16),
+  fare_amount FLOAT,
+  extra FLOAT,
+  mta_tax FLOAT,
+  tip_amount FLOAT,
+  tolls_amount FLOAT,
+  imp_surcharge FLOAT,
+  total_amount FLOAT,
+  pickup_location_id VARCHAR(16),
+  dropoff_location_id VARCHAR(16)
+);
+```
+9. In the mysql command line interface chaeck teh import by entering the following commands:
+```
+describe trips;
+```
+10. Query the trips table:
+```
+select distinct(pickup_location_id) from trips;
+```
+* this should return an emplty set as there is no data in the dataset
+* enter exit to leave the mysql interactive console
+
+#### Add data to Cloud SQL instance
+In this section we will copy the new your city taxi trips CSV that is stored on Cloud Storage locally
+1. Run the following in the command line:
+```
+gsutil cp gs://cloud-training/OCBL013/nyc_tlc_yellow_trips_2018_subset_1.csv trips.csv-1
+gsutil cp gs://cloud-training/OCBL013/nyc_tlc_yellow_trips_2018_subset_2.csv trips.csv-2
+```
+2. Connect to the mysql interactive console to load local infile data:
+```
+mysql --host=$MYSQLIP --user=root  --password  --local-infile
+```
+3. In the mysql interactive console select the database
+```
+use bts;
+```
+5. Load the local CSV file data using local-infile:
+```sql
+LOAD DATA LOCAL INFILE 'trips.csv-1' INTO TABLE trips
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(vendor_id,pickup_datetime,dropoff_datetime,passenger_count,trip_distance,rate_code,store_and_fwd_flag,payment_type,fare_amount,extra,mta_tax,tip_amount,tolls_amount,imp_surcharge,total_amount,pickup_location_id,dropoff_location_id);
+```
+```sql
+LOAD DATA LOCAL INFILE 'trips.csv-2' INTO TABLE trips
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(vendor_id,pickup_datetime,dropoff_datetime,passenger_count,trip_distance,rate_code,store_and_fwd_flag,payment_type,fare_amount,extra,mta_tax,tip_amount,tolls_amount,imp_surcharge,total_amount,pickup_location_id,dropoff_location_id);
+```
+
+#### Chekcing for data integrity
+Whenever data is imported from a source it is always important to check for data integrity
+e.g. lets dig into the trip distance column
+```sql
+select
+  max(trip_distance),
+  min(trip_distance)
+from
+  trips;
+```
+
+## Week 2: Building a Data Warehouse
+### The Modern Data Warehouse
+An enterprise data warehouse should consolidate data from many sources.
+* A data warehouse imposes a schema, a data lake is just raw data.
+* An enterprise data warehouse brings the data together, and makes it available for querying and data processing.
+* All data in a data warehouse should be available for querying
+
+What makes a data warehouse modern
+* Businesses data requirements continue to grow. You want to make sure the data warehouse can deal with data sets that don't fit into memory. You want a single data warehouse that can scale from gigabytes to petabytes of data 
+* You want the data warehouse to be serverless and fully NoOps. Removine the responisbilities of limited clusters and having to maintain indexes allows data analysts to carry out ad hoc queries faster
+* It must support rich visulisation and reporting. It should Idealy seamlessly plug into whichever visulisation or reporting tool your business wants
+* It should integrate with an exosystem of processing tools for building ETL pipelines
+* Pipelines should be capable of constantly refreshing data in the warehouse in order to keep it up to data. You must be able to stream data and not rely on batch updates
+* It has to support machine learning without moving the data out of the warehouse.
+* It should be possible to impose enterprise grade security like data exfiltration constraints
+* It should be able to share data and queries with collaboratiors
+
+### introduction to BigQuery
+BigQuery has many capabilities that make it an ideal data warehouse
+* all of the above list about the modern data warehouse
+
+* BigQuery tables are column-orientated compared to traditional or DBM tables, which are row-orientated. 
+  * Row-orientated tables are efficient for making updates to data contained in fields for OLTP systems. 
+  * Row-orientated tables are necessary because OLTP systems have frequent updates. 
+  * Analytics is slow and row-orientated tables because they have to read all the fields in a row. And depending on the kind of indexing or key, they may have to read extra rows and fields to find the information that is requested in the query. 
+* BigQuery, however, is an OLAP system, it's meant for analytics. 
+  * BigQuery tables are immutable and are optimized for reading and appending data, BigQuery tables are not optimized for updating. 
+  * BigQuery leverages the fact that most queries involve few columns, and so it only reads the columns required for the query. Thus making bigquery much more efficient since it is column-orientated.
+
+BigQuery is implemented in two parts, a storage engine and an analytic engine as illustrated.
+![image](https://user-images.githubusercontent.com/80007111/183470961-be552744-08a0-4f97-8897-96379c061a7d.png)
+* BigQuery data is physically stored on Google's distributed file system, called colossus, which ensures durability by using a raseur?? encoding to store redundant chunks of the data on multiple physical disks. 
+* Moreover, the data is replicated to multiple data centers, here are a couple of the optimizations that capacitor does, 
+  * capacitor runs lengthen codes on the data so that it can reduce the amount of data needed to be read. 
+  * It also reorders the data to make it more conducive for run length encoding, reordering the data is also called dictionary encoding.
+
+You don't need to provision resources before using BigQuery, unlike many or DBMS systems, 
+* BigQuery allocate storage and query resources dynamically based on your usage patterns. 
+* Storage resources are allocated as you consume them and de allocated as you remove data or drop tables. 
+* Query resources are allocated according to query type and complexity, 
+  * each query uses some number of slots, which are units of computation that comprise a certain amount of CPU and RAM.
+
+BigQuery is implemented using a micro service architecture, so there are no virtual machines to configure and maintain. 
+
+Under the hood analytics throughput is measured in BigQuery slots, 
+* a BigQuery slot is a unit of computational capacity required to execute sequel queries. 
+* BigQuery automatically calculates how many slots are required at each stage in the query, depending on size and complexity. 
+* A BigQuery slot is a combination of CPU, memory, and networking resources, it also includes a number of supporting technologies and sub services. 
+  * Note that each slot doesn't necessarily have the same specification during query execution, some slots may have more memory than others or more CPU or more IO.
+
+### Demo
+Find the demo script on github at training-data-analyst/courses/data-engineering/demos/bigquery_scale.md
+* github.com/GoogleCloudPlatform/training-data-analyst/blob/master/courses/data-engineering/demos/bigquery_scale.....
+
+
+
+
+
+
+
+
+
 
 
 
