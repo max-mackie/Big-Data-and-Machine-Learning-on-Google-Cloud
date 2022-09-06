@@ -642,6 +642,18 @@ Under the hood analytics throughput is measured in BigQuery slots,
 Find the demo script on github at training-data-analyst/courses/data-engineering/demos/bigquery_scale.md
 * github.com/GoogleCloudPlatform/training-data-analyst/blob/master/courses/data-engineering/demos/bigquery_scale.....
 
+### Get started with BigQuery
+How BigQuery organises data
+* BigQuery organizes data tables into units called datasets these datasets are scoped to your Google Cloud project
+  * By structuring data multiple scopes (datasets, projects and tables) you can structure information logically
+    * e.g. separate tables into datasets pertaining to differrent analytical domains and isolating datasets from each other using project level scoping accoring to business needs.
+* The project is what the billing is associated with.
+* Access control is through IAM (Identity Access Management) and is at the dataset/table view (or column level)
+* As with Cloud Storage, BigQuery storage encrypts data at rest and over the wire using Google-managed encryption keys.
+* Authentication is through IAM and so it's possible to use Gmail addresses or Google Workspace accounts for this task.
+* BigQuery provides predefined roles for controlling access to resources (custom roles can be specified)
+  * An important aspect of operating a data warehouse is allowing shared but controlled ac ess against the same data to different groups of users
+
 
 
 
